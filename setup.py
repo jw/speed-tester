@@ -12,7 +12,7 @@ test_requirements = convert_deps_to_pip(project['dev-packages'], r=False)
 
 setup(
     name="speed-tester",
-    version="0.1.2",
+    version="0.1.3",
     description="Test the speed of your network connection and "
                 "send the result to a monitor.",
     url="https://github.com/jw/speed-tester",
@@ -24,7 +24,8 @@ setup(
     python_requires='~=3.6',
     entry_points={
         'console_scripts': [
-            'tester=tester:main',
+            'speed-tester=speed-tester:main',
+            'speed-scheduler=speed-scheduler:main',
         ]
     },
     classifiers=[
