@@ -6,9 +6,9 @@ from pipenv.utils import convert_deps_to_pip
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-pfile = Project(chdir=False).parsed_pipfile
-requirements = convert_deps_to_pip(pfile['packages'], r=False)
-test_requirements = convert_deps_to_pip(pfile['dev-packages'], r=False)
+project = Project(chdir=False).parsed_pipfile
+requirements = convert_deps_to_pip(project['packages'], r=False)
+test_requirements = convert_deps_to_pip(project['dev-packages'], r=False)
 
 setup(
     name="speed-tester",
@@ -22,6 +22,7 @@ setup(
     py_modules=['tester', 'scheduler'],
     install_requires=requirements,
     python_requires='~=3.6',
+    scripts=['tester'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
