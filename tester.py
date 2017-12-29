@@ -11,7 +11,7 @@ def abort(message, code=1):
     sys.exit(code)
 
 
-# get the host and the port arguments
+# get the host and the port arguments and optionally the logfile
 description = "Tests the speed of your network connection and sends the result to a monitor."
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument("host", type=str,
