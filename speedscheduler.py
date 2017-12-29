@@ -13,7 +13,7 @@ def abort(message, code=1):
     sys.exit(code)
 
 
-def run():
+def main():
 
     description = "Switches the scheduled cronjob on or off."
 
