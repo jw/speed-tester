@@ -13,7 +13,7 @@ def abort(message, code=1):
     sys.exit(code)
 
 
-def main():
+def run():
 
     description = "Test the speed of your network connection and " \
                   "send the result to a monitor."
@@ -115,4 +115,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    run()
