@@ -1,10 +1,12 @@
 from crontab import CronTab
 
+# get the local directory
+
 cron = CronTab(user='jw')
 cron.remove_all()
 
-job = cron.new(command='python /home/jw/python/projects/speed-tester/tester.py', comment="speed-tester")
+command = 'python /home/jw/python/projects/speed-tester/tester.py'
+job = cron.new(command=command, comment="speed-tester")
 job.minute.every(10)
 
 cron.write()
-
