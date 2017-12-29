@@ -85,6 +85,6 @@ result["server"] = server_id
 # ...and send it to the monitor
 r = requests.post("http://{0}:{1}/api/results".format(args.host, args.port), json=result)
 if r.ok:
-    logging.info("Added result [up:{0}, down:{1}] ".format(result["upload"], result["download"]))
+    logging.info("Sent result [up:{0}, down:{1}] ".format(result["upload"], result["download"]))
 else:
     abort("Could not send the result to the monitor!")
