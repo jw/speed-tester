@@ -15,6 +15,8 @@ speedtest-cli = "*"
 [dev-packages]
 
 ipython = "*"
+twine = "*"
+pipenv = "*"
 
 
 [requires]
