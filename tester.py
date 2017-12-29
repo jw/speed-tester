@@ -3,6 +3,8 @@ from requests.exceptions import ConnectionError
 import speedtest
 import logging
 import sys
+import argparse
+
 
 logging.basicConfig(filename="speed-tester.log", level=logging.INFO)
 
@@ -11,6 +13,17 @@ def abort(message, code=1):
     logging.error("Aborting: {0}".format(message))
     sys.exit(code)
 
+
+# get the host and the port
+description = "Tests the speed of your network connection and sends the result to a monitor."
+parser = argparse.ArgumentParser(description=description)
+parser.add_argument("host", type=str,
+                    help="The host where the monitor runs.")
+parser.add_argument("port", type=str,
+                    help='The port where the monitor runs.')
+args = parser.parse_args()
+
+logging.info("Sending the results to monitor at {0}:{1}.".format(args.host, args.port))
 
 # the rester tester
 s = speedtest.Speedtest()

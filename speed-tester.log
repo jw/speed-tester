@@ -1,2 +1,12 @@
 ERROR:root:Aborting: Could not connect to the monitor; is it running?
 ERROR:root:Aborting: Could not connect to the monitor; is it running?
+INFO:root:Using {0}:{1} to send the results to.
+ERROR:root:Aborting: Could not connect to the monitor; is it running?
+INFO:root:Using localhost:8000 to send the results to.
+ERROR:root:Aborting: Could not connect to the monitor; is it running?
+INFO:root:Sending the results to monitor at localhost:8000.
+INFO:root:Found client Skynet Belgium (id:3) 
+INFO:root:Found server http://speedtest.edpnet.net/speedtest/upload.php (id:5) 
+INFO:root:Getting download speed...
+INFO:root:Getting upload speed...
+INFO:root:Added result [up:5232405.915194038, down:9642899.674046457] 
