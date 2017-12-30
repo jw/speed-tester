@@ -52,16 +52,16 @@ def main():
         r = requests.get("http://{0}:{1}/api/clients?ip={2}&isp={3}".
                          format(host, port, client["ip"], client["isp"]))
         if r.ok and len(r.json()) == 1:
-            logging.info("Found client {0} (id:{1}) ".
+            logging.info("Found client {0} (id:{1}).".
                          format(r.json()[0]["isp"], r.json()[0]["id"]))
             client_id = r.json()[0]["id"]
         else:
-            logging.info("Creating client {0} (ip:{1})".
+            logging.info("Creating client {0} (ip:{1})...".
                          format(client["isp"], client["ip"]))
             r = requests.post("http://{0}:{1}/api/clients".
                               format(host, port), json=client)
             if r.ok:
-                logging.info("Created client {0} (id:{1}) ".
+                logging.info("Created client {0} (id:{1}).".
                              format(r.json()["isp"], r.json()["id"]))
                 client_id = r.json()["id"]
             else:
@@ -77,16 +77,16 @@ def main():
         r = requests.get('http://{0}:{1}/api/servers?url={0}'.
                          format(host, port, s.best["url"]))
         if r.ok and len(r.json()) == 1:
-            logging.info("Found server {0} (id:{1}) ".
+            logging.info("Found server {0} (id:{1}).".
                          format(r.json()[0]["url"], r.json()[0]["id"]))
             server_id = r.json()[0]["id"]
         else:
-            logging.info("Creating server {0} (name:{1})".
+            logging.info("Creating server {0} (name:{1})...".
                          format(s.best["url"], s.best["name"]))
             r = requests.post("http://{0}:{1}/api/servers".
                               format(host, port), json=s.best)
             if r.ok:
-                logging.info("Created server {0} (id:{1}) ".
+                logging.info("Created server {0} (id:{1}).".
                              format(r.json()["url"], r.json()["id"]))
                 server_id = r.json()["id"]
             else:
