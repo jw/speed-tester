@@ -15,7 +15,7 @@ install:
 # command to run tests
 script:
   - pipenv run pytest
-sudo: false
+sudo: true
 dist: trusty
 os:
   - linux
