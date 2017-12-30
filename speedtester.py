@@ -110,7 +110,7 @@ def main():
         r = requests.post("http://{0}:{1}/api/results".
                           format(host, port), json=result)
         if r.ok:
-            logging.info("Sent result [up:{0}, down:{1}] ".
+            logging.info("Sent result [up:{0}, down:{1}].".
                          format(result["upload"], result["download"]))
         else:
             abort("Could not send the result to the monitor!")
@@ -118,8 +118,7 @@ def main():
         abort("Could not connect to the monitor; is it running?")
 
     later = datetime.now()
-
-    logging.info("Stopping the test at {0}; took (1}.".format(later,
+    logging.info("Stopping the test at {0}; took {1}.".format(later,
                                                               later - now))
 
 
