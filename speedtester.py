@@ -8,12 +8,15 @@ import sys
 import argparse
 
 
+__version__ = "0.1.6"
+
+
 def abort(message, code=1):
     logging.error("Aborting: {0}".format(message))
     sys.exit(code)
 
 
-def run():
+def main():
 
     description = "Test the speed of your network connection and " \
                   "send the result to a monitor."
@@ -115,4 +118,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    main()

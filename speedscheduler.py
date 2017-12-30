@@ -5,6 +5,8 @@ import sys
 import argparse
 
 
+__version__ = "0.1.6"
+
 COMMENT = "speed-tester"
 
 
@@ -13,7 +15,7 @@ def abort(message, code=1):
     sys.exit(code)
 
 
-def run():
+def main():
 
     description = "Switches the scheduled cronjob on or off."
 
@@ -59,4 +61,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    main()
