@@ -1,4 +1,6 @@
 
+[![Build Status](https://travis-ci.org/jw/speed-tester.svg?branch=master)](https://travis-ci.org/jw/speed-tester)
+
 ## Tests your network and sends results to a remote monitor
 
 The `speedtester` runs a network connection speed test and sends the results
