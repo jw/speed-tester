@@ -15,26 +15,12 @@ def abort(message, code=1):
 
 
 def main():
-
-    description = "Test the speed of your network connection and " \
-                  "send the result to a monitor."
-
-    # get the host and the port arguments and optionally the logfile
-    parser = argparse.ArgumentParser(description=description)
-    parser.add_argument("host", type=str,
-                        help="The host where the monitor runs.")
-    parser.add_argument("port", type=str,
-                        help='The port where the monitor runs.')
-    parser.add_argument("logfile", type=str, nargs="?",
-                        default="speed-tester.log", help="The log file.")
-
-    args = parser.parse_args()
-    host = args.host
-    port = args.port
-
-    # log somewhere
+    args = get_parser()
     logging.basicConfig(filename=args.logfile, level=logging.INFO)
+    perfrom_test(args.host, args.port)
 
+
+def perfrom_test(host, port):
     now = datetime.now()
 
     logging.info("Starting the test at {0}.".format(now))
@@ -118,8 +104,24 @@ def main():
         abort("Could not connect to the monitor; is it running?")
 
     later = datetime.now()
+
     logging.info("Stopping the test at {0}; took {1}.".format(later,
                                                               later - now))
+
+
+def get_parser():
+    description = "Test the speed of your network connection and " \
+                  "send the result to a monitor."
+    # get the host and the port arguments and optionally the logfile
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument("host", type=str,
+                        help="The host where the monitor runs.")
+    parser.add_argument("port", type=str,
+                        help='The port where the monitor runs.')
+    parser.add_argument("logfile", type=str, nargs="?",
+                        default="speed-tester.log", help="The log file.")
+    args = parser.parse_args()
+    return args
 
 
 if __name__ == '__main__':

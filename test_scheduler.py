@@ -20,10 +20,14 @@ def test_scheduler():
     parser = speedscheduler.get_parser()
     args = parser.parse_args(['localhost', "80"])
 
-    # empty the cron
+    # first empty the cron
     cron = CronTab(True)
     cron.remove_all()
     cron.write()
+
+    assert not is_enabled()
+
+    # test the scheduler
 
     speedscheduler.schedule(args)
     assert is_enabled()
