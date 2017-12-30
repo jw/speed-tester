@@ -21,11 +21,14 @@ def main():
                         help="The host where the monitor runs.")
     parser.add_argument("port", type=str,
                         help='The port where the monitor runs.')
+    parser.add_argument("name", type=str, nargs="?",
+                        default="/usr/local/bin/speedtester",
+                        help="The speedtester command.")
     parser.add_argument("logfile", type=str, nargs="?",
-                        default="speed-tester.log",
-                        help="The log file for the speed-tester.")
+                        default="/tmp/speedtester.log",
+                        help="The log file for the speedtester.")
     parser.add_argument("user", type=str, nargs="?",
-                        help="The user which will run the speed-tester.")
+                        help="The user which will run the speedtester.")
     parser.add_argument("--verbose", action="store_true",
                         help="Increase verbosity level.")
     args = parser.parse_args()
@@ -38,8 +41,8 @@ def main():
     if len(list(cron.find_comment(COMMENT))) == 0:
         # no job found - create one...
         print("Enabling speedtester...", end='')
-        command = "speedtester {0} {1} {2}".format(args.host, args.port,
-                                                   args.logfile)
+        command = "{0} {1} {2} {3}".format(args.name, args.host,
+                                           args.port, args.logfile)
         job = cron.new(command=command, comment=COMMENT)
         job.minute.every(10)
         print(" done.")

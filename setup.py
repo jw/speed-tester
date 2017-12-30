@@ -12,7 +12,7 @@ test_requirements = convert_deps_to_pip(project['dev-packages'], r=False)
 
 setup(
     name="speed-tester",
-    version="0.1.7",
+    version="0.1.9",
     description="Test the speed of your network connection and "
                 "send the result to a monitor.",
     url="https://github.com/jw/speed-tester",

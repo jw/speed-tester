@@ -6,6 +6,7 @@ import speedtest
 import logging
 import sys
 import argparse
+from datetime import datetime
 
 
 def abort(message, code=1):
@@ -33,6 +34,10 @@ def main():
 
     # log somewhere
     logging.basicConfig(filename=args.logfile, level=logging.INFO)
+
+    now = datetime.now()
+
+    logging.info("Starting the test at {0}.".format(now))
     logging.info("Sending the results to monitor at {0}:{1}.".
                  format(host, port))
 
@@ -111,6 +116,11 @@ def main():
             abort("Could not send the result to the monitor!")
     except ConnectionError:
         abort("Could not connect to the monitor; is it running?")
+
+    later = datetime.now()
+
+    logging.info("Stopping the test at {0}; took (1}.".format(later,
+                                                              later - now))
 
 
 if __name__ == '__main__':
