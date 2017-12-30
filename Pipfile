@@ -17,6 +17,7 @@ speedtest-cli = "*"
 ipython = "*"
 twine = "*"
 pipenv = "*"
+pytest = "*"
 
 
 [requires]
