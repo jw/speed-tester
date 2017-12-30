@@ -13,9 +13,14 @@ def abort(message, code=1):
 
 
 def main():
-    description = "Switches the scheduled cronjob on or off."
+    parser = get_parser()
+    args = parser.parse_args()
+    schedule(args)
 
+
+def get_parser():
     # get the host and the port arguments and optionally the logfile
+    description = "Switches the scheduled cronjob on or off."
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("host", type=str,
                         help="The host where the monitor runs.")
@@ -31,8 +36,10 @@ def main():
                         help="The user which will run the speedtester.")
     parser.add_argument("--verbose", action="store_true",
                         help="Increase verbosity level.")
-    args = parser.parse_args()
+    return parser
 
+
+def schedule(args):
     if args.user is None:
         args.user = True
 

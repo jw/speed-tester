@@ -1,5 +1,6 @@
 from crontab import CronTab
 import speedscheduler
+import pytest
 
 
 def is_enabled():
@@ -10,6 +11,28 @@ def is_enabled():
         return True
 
 
-def test_creation():
-    print(is_enabled)
-    assert 4 == 4
+def test_no_required_parameters():
+    with pytest.raises(SystemExit):
+        speedscheduler.main()
+
+
+def test_scheduler():
+    parser = speedscheduler.get_parser()
+    args = parser.parse_args(['localhost', "80"])
+
+    # empty the cron
+    cron = CronTab(True)
+    cron.remove_all()
+    cron.write()
+
+    speedscheduler.schedule(args)
+    assert is_enabled()
+
+    speedscheduler.schedule(args)
+    assert not is_enabled()
+
+    speedscheduler.schedule(args)
+    assert is_enabled()
+
+    speedscheduler.schedule(args)
+    assert not is_enabled()
