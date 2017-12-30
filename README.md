@@ -5,7 +5,7 @@ The `speedtester` runs a network connection speed test and sends the results
 to a remote monitor (see the
 [`speed-monitor` project](https://github.com/jw/speed-monitor) for this).
 
-A `crontab` scheduler (`speedscheduler`)is also provided.
+A `crontab` scheduler (called `speedscheduler`) is also provided.
 
 ## Installation
 
