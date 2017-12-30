@@ -8,9 +8,6 @@ import sys
 import argparse
 
 
-__version__ = "0.1.6"
-
-
 def abort(message, code=1):
     logging.error("Aborting: {0}".format(message))
     sys.exit(code)

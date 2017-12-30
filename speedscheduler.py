@@ -4,8 +4,6 @@ from crontab import CronTab
 import sys
 import argparse
 
-__version__ = "0.1.6"
-
 COMMENT = "speed-tester"
 
 
