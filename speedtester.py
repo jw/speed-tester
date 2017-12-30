@@ -43,7 +43,6 @@ def main():
     s = speedtest.Speedtest()
 
     # first get client
-    config = s.get_config()
     client = s.config["client"]
 
     # get or create it via rest

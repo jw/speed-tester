@@ -4,7 +4,6 @@ from crontab import CronTab
 import sys
 import argparse
 
-
 __version__ = "0.1.6"
 
 COMMENT = "speed-tester"
@@ -16,7 +15,6 @@ def abort(message, code=1):
 
 
 def main():
-
     description = "Switches the scheduled cronjob on or off."
 
     # get the host and the port arguments and optionally the logfile
@@ -41,9 +39,9 @@ def main():
 
     if len(list(cron.find_comment(COMMENT))) == 0:
         # no job found - create one...
-        print("Enabling speed-tester...", end='')
-        command = "speed-tester {0} {1} {2}".format(args.host, args.port,
-                                                    args.logfile)
+        print("Enabling speedtester...", end='')
+        command = "speedtester {0} {1} {2}".format(args.host, args.port,
+                                                   args.logfile)
         job = cron.new(command=command, comment=COMMENT)
         job.minute.every(10)
         print(" done.")
@@ -52,7 +50,7 @@ def main():
 
     else:
         # ...remove all found jobs
-        print("Disabling speed-tester...", end='')
+        print("Disabling speedtester...", end='')
         for job in cron.find_comment(COMMENT):
             cron.remove(job)
         print(" done.")
