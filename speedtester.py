@@ -123,7 +123,7 @@ def create_or_get_server(host, port, s):
                         format(r.json()[0]["host"], r.json()[0]["id"]))
             server_id = r.json()[0]["id"]
         else:
-            logger.info("Creating server {0} (name:{1})...".
+            logger.info("Creating server {0} from {1}...".
                         format(s.best["host"], s.best["name"]))
 
             # replace the 'id' key with the 'identifier'
