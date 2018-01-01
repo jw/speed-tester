@@ -8,3 +8,9 @@ $ python setup.py clean sdist bdist_wheel
 $ twine upload dist/*
 ```
 
+## Test the app
+
+```bash
+$ pipenv check --style *.py
+$ pipenv run py.test
+```

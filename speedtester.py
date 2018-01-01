@@ -19,7 +19,7 @@ def abort(message, code=1):
 def main():
     args = get_parser()
     create_logger(args)
-    perfrom_test(args.host, args.port)
+    perform_test(args.host, args.port)
 
 
 def create_logger(args):
@@ -43,69 +43,17 @@ def create_logger(args):
         logger.addHandler(ch)
 
 
-def perfrom_test(host, port):
+def perform_test(host, port):
     now = datetime.now()
 
     logger.info("Starting the test at {0}.".format(now))
     logger.info("Sending the results to monitor at {0}:{1}.".
                 format(host, port))
 
-    # the real tester
     s = speedtest.Speedtest()
 
-    # first get client
-    client = s.config["client"]
-
-    # get or create it via rest
-    try:
-        r = requests.get("http://{0}:{1}/api/clients?ip={2}&isp={3}".
-                         format(host, port, client["ip"], client["isp"]))
-        if r.ok and len(r.json()) == 1:
-            logger.info("Found client {0} (id:{1}).".
-                        format(r.json()[0]["isp"], r.json()[0]["id"]))
-            client_id = r.json()[0]["id"]
-        else:
-            logger.info("Creating client {0} (ip:{1})...".
-                        format(client["isp"], client["ip"]))
-            logger.debug("Creating client using {0}.".format(client))
-            r = requests.post("http://{0}:{1}/api/clients".
-                              format(host, port), json=client)
-            if r.ok:
-                logger.info("Created client {0} (id:{1}).".
-                            format(r.json()["isp"], r.json()["id"]))
-                client_id = r.json()["id"]
-            else:
-                abort("Could not get or create the client!")
-    except ConnectionError:
-        abort("Could not connect to the monitor; is it running?")
-
-    # then get the server
-    s.get_best_server()
-
-    # get or create it via rest
-    try:
-        r = requests.get('http://{0}:{1}/api/servers?host={0}'.
-                         format(host, port, s.best["host"]))
-        if r.ok and len(r.json()) == 1:
-            logger.info("Found server {0} (id:{1}).".
-                        format(r.json()[0]["host"], r.json()[0]["id"]))
-            server_id = r.json()[0]["id"]
-        else:
-            logger.info("Creating server {0} (name:{1})...".
-                        format(s.best["host"], s.best["name"]))
-            s.best['identifier'] = s.best['id']
-            del s.best['id']
-            logger.debug("Creating server using {0}.".format(s.best))
-            r = requests.post("http://{0}:{1}/api/servers".
-                              format(host, port), json=s.best)
-            if r.ok:
-                logger.info("Created server {0} (id:{1}).".
-                            format(r.json()["host"], r.json()["id"]))
-                server_id = r.json()["id"]
-            else:
-                abort("Could not get or create the server!")
-    except ConnectionError:
-        abort("Could not connect to the monitor; is it running?")
+    client_id = create_or_get_client(host, port, s)
+    server_id = create_or_get_server(host, port, s)
 
     # test the speed of the link
     logger.info("Getting download speed...")
@@ -113,12 +61,10 @@ def perfrom_test(host, port):
     logger.info("Getting upload speed...")
     s.upload()
 
-    # prepare the result...
     result = s.results.dict()
     result["client"] = client_id
     result["server"] = server_id
 
-    # ...and send it to the monitor
     try:
         logger.debug("Sending this result: {0}.".format(result))
         r = requests.post("http://{0}:{1}/api/results".
@@ -135,6 +81,71 @@ def perfrom_test(host, port):
 
     logger.info("Stopping the test at {0}; took {1}.".format(later,
                                                              later - now))
+
+
+def create_or_get_client(host, port, s):
+    client = s.config["client"]
+    try:
+        r = requests.get("http://{0}:{1}/api/clients?ip={2}&isp={3}".
+                         format(host, port, client["ip"], client["isp"]))
+        if r.ok and len(r.json()) == 1:
+            logger.info("Found client {0} (id:{1}).".
+                        format(r.json()[0]["isp"], r.json()[0]["id"]))
+            client_id = r.json()[0]["id"]
+        else:
+            logger.info("Creating client {0} (ip:{1})...".
+                        format(client["isp"], client["ip"]))
+            logger.debug("Creating client using {0}.".format(client))
+
+            r = requests.post("http://{0}:{1}/api/clients".
+                              format(host, port), json=client)
+
+            if r.ok:
+                logger.info("Created client {0} (id:{1}).".
+                            format(r.json()["isp"], r.json()["id"]))
+                client_id = r.json()["id"]
+            else:
+                abort("Could not get or create the client!")
+
+    except ConnectionError:
+        abort("Could not connect to the monitor; is it running?")
+
+    return client_id
+
+
+def create_or_get_server(host, port, s):
+    s.get_best_server()
+    try:
+        r = requests.get('http://{0}:{1}/api/servers?host={0}'.
+                         format(host, port, s.best["host"]))
+        if r.ok and len(r.json()) == 1:
+            logger.info("Found server {0} (id:{1}).".
+                        format(r.json()[0]["host"], r.json()[0]["id"]))
+            server_id = r.json()[0]["id"]
+        else:
+            logger.info("Creating server {0} (name:{1})...".
+                        format(s.best["host"], s.best["name"]))
+
+            # replace the 'id' key with the 'identifier'
+            s.best['identifier'] = s.best['id']
+            del s.best['id']
+
+            logger.debug("Creating server using {0}.".format(s.best))
+
+            r = requests.post("http://{0}:{1}/api/servers".
+                              format(host, port), json=s.best)
+
+            if r.ok:
+                logger.info("Created server {0} (id:{1}).".
+                            format(r.json()["host"], r.json()["id"]))
+                server_id = r.json()["id"]
+            else:
+                abort("Could not get or create the server!")
+
+    except ConnectionError:
+        abort("Could not connect to the monitor; is it running?")
+
+    return server_id
 
 
 def get_parser():
