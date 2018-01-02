@@ -25,9 +25,7 @@ def main():
 def create_logger(args):
     """
     Create a logger.  If --console is given, also log to console; if
-    --verbse is set, enable the Logging.DEBUG.
-    :param args:
-    :return:
+    --verbose is set, enable the Logging.DEBUG.
     """
     if args.verbose:
         logger.setLevel(logging.DEBUG)
@@ -39,7 +37,6 @@ def create_logger(args):
 
     if args.console:
         ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
         logger.addHandler(ch)
 
 
@@ -55,7 +52,7 @@ def perform_test(host, port):
     client_id = create_or_get_client(host, port, s)
     server_id = create_or_get_server(host, port, s)
 
-    # test the speed of the link
+    # test the speed of the link between client and server
     logger.info("Getting download speed...")
     s.download()
     logger.info("Getting upload speed...")
@@ -66,7 +63,7 @@ def perform_test(host, port):
     result["server"] = server_id
 
     try:
-        logger.debug("Sending this result: {0}.".format(result))
+        logger.debug("Posting this result: {0}.".format(result))
         r = requests.post("http://{0}:{1}/api/results".
                           format(host, port), json=result)
         if r.ok:
@@ -74,7 +71,8 @@ def perform_test(host, port):
                         format(result["upload"], result["download"]))
         else:
             abort("Could not send the result to the monitor!")
-    except ConnectionError:
+    except ConnectionError as ce:
+        logging.debug("Caught exception: {0}.".format(ce))
         abort("Could not connect to the monitor; is it running?")
 
     later = datetime.now()
@@ -84,10 +82,19 @@ def perform_test(host, port):
 
 
 def create_or_get_client(host, port, s):
+    """
+    Gets the client from the monitor; of found returns it, otherwise
+    a new client instance will be created and sent to the monitor.
+    :return: the id (primary key) of the client.
+    """
     client = s.config["client"]
     try:
-        r = requests.get("http://{0}:{1}/api/clients?ip={2}&isp={3}".
-                         format(host, port, client["ip"], client["isp"]))
+        request = "http://{0}:{1}/api/clients?" \
+                  "ip={2}&isp={3}".format(host, port,
+                                          client["ip"], client["isp"])
+        logger.debug("Querying for {0}...".format(request))
+
+        r = requests.get(request)
         if r.ok and len(r.json()) == 1:
             logger.info("Found client {0} (id:{1}).".
                         format(r.json()[0]["isp"], r.json()[0]["id"]))
@@ -107,17 +114,26 @@ def create_or_get_client(host, port, s):
             else:
                 abort("Could not get or create the client!")
 
-    except ConnectionError:
+    except ConnectionError as ce:
+        logger.debug("Caught exception: {0}.".format(ce))
         abort("Could not connect to the monitor; is it running?")
 
     return client_id
 
 
 def create_or_get_server(host, port, s):
+    """
+    Gets the server from the monitor; of found returns it, otherwise
+    a new server instancec will be created and sent to the monitor.
+    :return: the id (primary key) of the server.
+    """
     s.get_best_server()
     try:
-        r = requests.get('http://{0}:{1}/api/servers?host={0}'.
-                         format(host, port, s.best["host"]))
+        request = "http://{0}:{1}/api/servers?" \
+                  "host={2}".format(host, port, s.best["host"])
+        logger.debug("Querying for {0}...".format(request))
+
+        r = requests.get(request)
         if r.ok and len(r.json()) == 1:
             logger.info("Found server {0} (id:{1}).".
                         format(r.json()[0]["host"], r.json()[0]["id"]))
@@ -142,7 +158,8 @@ def create_or_get_server(host, port, s):
             else:
                 abort("Could not get or create the server!")
 
-    except ConnectionError:
+    except ConnectionError as ce:
+        logger.debug("Caught exception: {0}.".format(ce))
         abort("Could not connect to the monitor; is it running?")
 
     return server_id
