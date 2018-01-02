@@ -14,6 +14,7 @@ install:
   - pipenv install -d --system
 # command to run tests
 script:
+  - pipenv check --style *.py
   - pipenv run pytest
 sudo: true
 dist: trusty
