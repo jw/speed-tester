@@ -1,5 +1,6 @@
 
 [![Build Status](https://travis-ci.org/jw/speed-tester.svg?branch=master)](https://travis-ci.org/jw/speed-tester)
+[![PyPI version](https://badge.fury.io/py/speed-tester.svg)](https://badge.fury.io/py/speed-tester)
 
 ## Tests your network and sends results to a remote monitor
 
