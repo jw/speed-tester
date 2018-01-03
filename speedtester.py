@@ -24,8 +24,8 @@ def main():
 
 def create_logger(args):
     """
-    Create a logger.  If --console is given, also log to console; if
-    --verbose is set, enable the Logging.DEBUG.
+    Creates a logger.  If --console is given, also logs to console; if
+    --verbose is set, enables the Logging.DEBUG.
     """
     if args.verbose:
         logger.setLevel(logging.DEBUG)
@@ -83,7 +83,7 @@ def perform_test(host, port):
 
 def create_or_get_client(host, port, s):
     """
-    Gets the client from the monitor; of found returns it, otherwise
+    Gets the client from the monitor; if found returns it, otherwise
     a new client instance will be created and sent to the monitor.
     :return: the id (primary key) of the client.
     """
