@@ -26,6 +26,10 @@ def get_parser():
                         help="The host where the monitor runs.")
     parser.add_argument("port", type=str,
                         help='The port where the monitor runs.')
+    parser.add_argument("username", type=str,
+                        help='The username to connect to the monitor.')
+    parser.add_argument("password", type=str,
+                        help='The password to connect to the monitor.')
     parser.add_argument("name", type=str, nargs="?",
                         default="/usr/local/bin/speedtester",
                         help="The speedtester command.")
@@ -48,8 +52,9 @@ def schedule(args):
     if len(list(cron.find_comment(COMMENT))) == 0:
         # no job found - create one...
         print("Enabling speedtester...", end='')
-        command = "{0} {1} {2} {3}".format(args.name, args.host,
-                                           args.port, args.logfile)
+        command = "{0} {1} {2} {3} {4} {5}".format(args.name, args.host,
+                                                   args.port, args.username,
+                                                   args.password, args.logfile)
         job = cron.new(command=command, comment=COMMENT)
         job.minute.every(10)
         print(" done.")

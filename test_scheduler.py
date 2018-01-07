@@ -18,7 +18,7 @@ def test_no_required_parameters():
 
 def test_scheduler():
     parser = speedscheduler.get_parser()
-    args = parser.parse_args(['localhost', "80"])
+    args = parser.parse_args(['localhost', "80", "username", "s3cr3t"])
 
     # first empty the cron
     cron = CronTab(True)
