@@ -23,13 +23,14 @@ $ pip install speed-tester
 The `speedscheduler` enables or disables the scheduler.  Each 10 minutes
 the tester will be run if enabled.
 
-The `host` and `port` of the monitor need to be provided; while the `logfile`
-and `user` are optional.  There is also a `--verbose` flag.
+The `host`, `port`, `username` and `password` for the monitor need to
+be provided; while the `logfile` and `user` are optional.  There is also
+a `--verbose` flag.
 
 See `speedscheduler --help` for more info.
 
 ```bash
-$ speedscheduler host 8000
+$ speedscheduler host 8000 username s3cr3t
 Enabling speed-tester... done.
 ```
 
@@ -39,13 +40,14 @@ The `speedtester` uses `speedtest` to check the connection; so it will
 find the closest server (based on pings) and will run an upload and download
 test with it.  The result will be sent to the monitor (at `host:port`),
 and the logs will be kept in the provided logfile (by default it is
-`speed-tester.log`).
+`speed-tester.log`).  The monitor needs the `username` and `password`
+combination.
 
 The `--verbose` logs in DEBUG mode; the `--console` also logs to console.
 See `speedtester --help` for more info.
 
 ```bash
-$ python speedtester.py localhost 8000 --console --verbose
+$ python speedtester.py localhost 8000 username s3cr3t --console --verbose
 Starting the test at 2018-01-01 12:48:17.299942.
 Sending the results to monitor at localhost:8000.
 Found client Skynet Belgium (id:2).

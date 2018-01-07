@@ -19,7 +19,7 @@ def abort(message, code=1):
 def main():
     args = get_parser()
     create_logger(args)
-    perform_test(args.host, args.port)
+    perform_test(args.host, args.port, args.username, args.password)
 
 
 def create_logger(args):
@@ -40,7 +40,7 @@ def create_logger(args):
         logger.addHandler(ch)
 
 
-def perform_test(host, port):
+def perform_test(host, port, username, password):
     now = datetime.now()
 
     logger.info("Starting the test at {0}.".format(now))
@@ -49,8 +49,8 @@ def perform_test(host, port):
 
     s = speedtest.Speedtest()
 
-    client_id = create_or_get_client(host, port, s)
-    server_id = create_or_get_server(host, port, s)
+    client_id = create_or_get_client(host, port, username, password, s)
+    server_id = create_or_get_server(host, port, username, password, s)
 
     # test the speed of the link between client and server
     logger.info("Getting download speed...")
@@ -65,7 +65,8 @@ def perform_test(host, port):
     try:
         logger.debug("Posting this result: {0}.".format(result))
         r = requests.post("http://{0}:{1}/api/results".
-                          format(host, port), json=result)
+                          format(host, port), json=result,
+                          auth=(username, password))
         if r.ok:
             logger.info("Sent result [up:{0}, down:{1}].".
                         format(result["upload"], result["download"]))
@@ -81,7 +82,7 @@ def perform_test(host, port):
                                                              later - now))
 
 
-def create_or_get_client(host, port, s):
+def create_or_get_client(host, port, username, password, s):
     """
     Gets the client from the monitor; if found returns it, otherwise
     a new client instance will be created and sent to the monitor.
@@ -94,18 +95,19 @@ def create_or_get_client(host, port, s):
                                           client["ip"], client["isp"])
         logger.debug("Querying for {0}...".format(request))
 
-        r = requests.get(request)
+        r = requests.get(request, auth=(username, password))
         if r.ok and len(r.json()) == 1:
             logger.info("Found client {0} (id:{1}).".
                         format(r.json()[0]["isp"], r.json()[0]["id"]))
             client_id = r.json()[0]["id"]
-        else:
+        elif r.ok and len(r.json()) == 0:
             logger.info("Creating client {0} (ip:{1})...".
                         format(client["isp"], client["ip"]))
             logger.debug("Creating client using {0}.".format(client))
 
             r = requests.post("http://{0}:{1}/api/clients".
-                              format(host, port), json=client)
+                              format(host, port), json=client,
+                              auth=(username, password))
 
             if r.ok:
                 logger.info("Created client {0} (id:{1}).".
@@ -113,15 +115,21 @@ def create_or_get_client(host, port, s):
                 client_id = r.json()["id"]
             else:
                 abort("Could not get or create the client!")
+        else:
+            if r.status_code == 401:
+                logger.info("Invalid username password combination!")
+            else:
+                logger.debug("Invalid reply from server {0}.".format(r))
+            abort("Could not connect to the monitor; is it running?")
 
-    except ConnectionError as ce:
-        logger.debug("Caught exception: {0}.".format(ce))
+    except ConnectionError as e:
+        logger.debug("Caught exception: {0}.".format(e))
         abort("Could not connect to the monitor; is it running?")
 
     return client_id
 
 
-def create_or_get_server(host, port, s):
+def create_or_get_server(host, port, username, password, s):
     """
     Gets the server from the monitor; of found returns it, otherwise
     a new server instancec will be created and sent to the monitor.
@@ -133,12 +141,12 @@ def create_or_get_server(host, port, s):
                   "host={2}".format(host, port, s.best["host"])
         logger.debug("Querying for {0}...".format(request))
 
-        r = requests.get(request)
+        r = requests.get(request, auth=(username, password))
         if r.ok and len(r.json()) == 1:
             logger.info("Found server {0} (id:{1}).".
                         format(r.json()[0]["host"], r.json()[0]["id"]))
             server_id = r.json()[0]["id"]
-        else:
+        elif r.ok and len(r.json()) == 0:
             logger.info("Creating server {0} from {1}...".
                         format(s.best["host"], s.best["name"]))
 
@@ -149,7 +157,8 @@ def create_or_get_server(host, port, s):
             logger.debug("Creating server using {0}.".format(s.best))
 
             r = requests.post("http://{0}:{1}/api/servers".
-                              format(host, port), json=s.best)
+                              format(host, port), json=s.best,
+                              auth=(username, password))
 
             if r.ok:
                 logger.info("Created server {0} (id:{1}).".
@@ -157,6 +166,12 @@ def create_or_get_server(host, port, s):
                 server_id = r.json()["id"]
             else:
                 abort("Could not get or create the server!")
+        else:
+            if r.status_code == 401:
+                logger.info("Invalid username password combination!")
+            else:
+                logger.debug("Invalid reply from server {0}.".format(r))
+            abort("Could not connect to the monitor; is it running?")
 
     except ConnectionError as ce:
         logger.debug("Caught exception: {0}.".format(ce))
@@ -166,14 +181,21 @@ def create_or_get_server(host, port, s):
 
 
 def get_parser():
+    """
+    Get the host, port, username and password.  Optional arguments is the
+    logfile and the --console and --verbose parameters.
+    """
     description = "Test the speed of your network connection and " \
                   "send the result to a monitor."
-    # get the host and the port arguments and optionally the logfile
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("host", type=str,
                         help="The host where the monitor runs.")
     parser.add_argument("port", type=str,
                         help='The port where the monitor runs.')
+    parser.add_argument("username", type=str,
+                        help='The username to connect to the monitor.')
+    parser.add_argument("password", type=str,
+                        help='The password to connect to the monitor.')
     parser.add_argument("logfile", type=str, nargs="?",
                         default="speed-tester.log", help="The log file.")
     parser.add_argument("--console", action="store_true",
